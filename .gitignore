@@ -3,7 +3,5 @@ venv/
 __pycache__/
 *.pyc
 .vscode/
-data/
-documents/
 uploaded_docs/
 .streamlit/
