@@ -11,214 +11,242 @@ from utils import (
 )
 
 st.set_page_config(
-    page_title="HCL Onboarding Portal",
+    page_title="XYZ Onboarding Portal",
     page_icon="🏢",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ── GLOBAL CSS ──────────────────────────────────────────────────────────────
+# ── THEME INIT ────────────────────────────────────────────────────────────────
+# ── THEME TOGGLE ─────────────────────────────────────────────────────────────
+# We use Streamlit's native theme + only override custom component styles
+# Theme toggle is in sidebar below
+
+# ── INJECT CSS ────────────────────────────────────────────────────────────────
+# We do NOT override Streamlit base colors - we let the native theme (Light/Dark)
+# handle backgrounds and text. We only style our custom HTML components.
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body, .stApp { background-color: #080c14; color: #dce3f0; font-family: 'DM Sans', sans-serif; }
-
-h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+/* FONTS ONLY - no background overrides so Streamlit theme works */
+*, *::before, *::after { box-sizing: border-box; }
+html, body, .stApp { font-family: 'DM Sans', sans-serif !important; }
+h1,h2,h3,h4,h5,h6 { font-family: 'Syne', sans-serif !important; }
 
 .main .block-container { padding: 1.5rem 2rem; max-width: 1300px; }
 
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0c1220 0%, #080c14 100%);
-    border-right: 1px solid #1a2540;
-    width: 260px !important;
-}
-section[data-testid="stSidebar"] * { color: #8a9bc4 !important; }
-section[data-testid="stSidebar"] strong { color: #dce3f0 !important; }
-
-/* Nav buttons */
+/* BUTTONS - inherit theme colors */
 .stButton > button {
-    background: transparent !important;
-    color: #8a9bc4 !important;
-    border: 1px solid #1a2540 !important;
     border-radius: 8px !important;
-    padding: 0.6rem 1rem !important;
+    padding: 0.55rem 1rem !important;
     font-family: 'DM Sans', sans-serif !important;
     font-size: 0.88rem !important;
     font-weight: 500 !important;
     width: 100% !important;
     text-align: left !important;
-    transition: all 0.18s ease !important;
-    margin-bottom: 2px !important;
+    transition: all 0.18s !important;
+    border: 1px solid rgba(128,128,128,0.3) !important;
 }
 .stButton > button:hover {
-    background: #0f2040 !important;
-    color: #4a9eff !important;
     border-color: #4a9eff !important;
+    color: #4a9eff !important;
 }
 
-/* Active page button */
-.active-nav > div > button {
-    background: linear-gradient(135deg, #0f2040, #162d54) !important;
-    color: #4a9eff !important;
+/* FORM INPUTS - inherit theme */
+.stTextInput > div > div > input,
+.stTextArea > div > div > textarea,
+.stNumberInput > div > div > input {
+    border-radius: 8px !important;
+    font-family: 'DM Sans', sans-serif !important;
+    border: 1px solid rgba(128,128,128,0.3) !important;
+}
+.stTextInput > div > div > input:focus,
+.stTextArea > div > div > textarea:focus {
     border-color: #4a9eff !important;
-    font-weight: 600 !important;
+    box-shadow: 0 0 0 2px rgba(74,158,255,0.15) !important;
+}
+.stTextInput label, .stTextArea label, .stSelectbox label,
+.stNumberInput label, .stFileUploader label {
+    font-size: 0.88rem !important;
+    font-family: 'DM Sans', sans-serif !important;
 }
 
-/* Cards */
+/* SELECTBOX */
+[data-baseweb="select"] { border-radius: 8px !important; }
+
+/* TABS */
+.stTabs [data-baseweb="tab-list"] {
+    border-radius: 10px !important;
+    padding: 4px !important;
+    border: 1px solid rgba(128,128,128,0.2) !important;
+}
+.stTabs [data-baseweb="tab"] {
+    border-radius: 8px !important;
+    font-family: 'DM Sans', sans-serif !important;
+}
+.stTabs [aria-selected="true"] { color: #4a9eff !important; }
+
+/* CHAT */
+.stChatMessage {
+    border-radius: 12px !important;
+    margin-bottom: 0.8rem !important;
+    border: 1px solid rgba(128,128,128,0.2) !important;
+}
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+    border-left: 3px solid #4a9eff !important;
+}
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
+    border-left: 3px solid #22d3a0 !important;
+}
+.stChatInputContainer {
+    border-radius: 10px !important;
+    margin-top: 1rem;
+    border: 1px solid rgba(128,128,128,0.3) !important;
+}
+
+/* PROGRESS */
+.stProgress > div > div > div {
+    background: linear-gradient(90deg, #4a9eff, #22d3a0) !important;
+    border-radius: 6px !important;
+}
+.stProgress > div > div { border-radius: 6px !important; }
+
+/* EXPANDER */
+.streamlit-expanderHeader { border-radius: 8px !important; }
+.streamlit-expanderHeader:hover { border-color: #4a9eff !important; }
+
+/* METRICS */
+[data-testid="stMetricValue"] {
+    color: #4a9eff !important;
+    font-family: 'Syne', sans-serif !important;
+}
+[data-testid="metric-container"] {
+    border-radius: 10px !important;
+    padding: 0.8rem !important;
+    border: 1px solid rgba(128,128,128,0.2) !important;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 4px; }
+
+/* CUSTOM CARDS - theme aware via currentColor */
 .card {
-    background: #0d1422;
-    border: 1px solid #1a2540;
     border-radius: 14px;
     padding: 1.4rem 1.6rem;
     margin-bottom: 1rem;
+    border: 1px solid rgba(128,128,128,0.2);
 }
 .card-accent { border-left: 3px solid #4a9eff; }
 .card-green  { border-left: 3px solid #22d3a0; }
 .card-amber  { border-left: 3px solid #f59e0b; }
 .card-red    { border-left: 3px solid #f43f5e; }
 
-/* Stats grid */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
+/* STAT BOX */
 .stat-box {
-    background: #0d1422;
-    border: 1px solid #1a2540;
     border-radius: 12px;
     padding: 1.2rem;
     text-align: center;
     transition: border-color 0.2s;
+    border: 1px solid rgba(128,128,128,0.2);
 }
 .stat-box:hover { border-color: #4a9eff; }
-.stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: #4a9eff; }
-.stat-lbl { font-size: 0.75rem; color: #4a5a7a; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.06em; }
+.stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #4a9eff;
+}
+.stat-lbl {
+    font-size: 0.75rem;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+}
 
-/* Section header */
+/* SECTION HEADER */
 .section-header {
     display: flex; align-items: center; gap: 0.7rem;
     margin-bottom: 1.2rem; padding-bottom: 0.7rem;
-    border-bottom: 1px solid #1a2540;
+    border-bottom: 1px solid rgba(128,128,128,0.2);
 }
-.section-header h2 { font-size: 1.3rem; color: #dce3f0; }
+.section-header h2 { font-size: 1.3rem; margin: 0; }
 .section-badge {
-    background: #0f2040; color: #4a9eff;
-    padding: 0.2rem 0.6rem; border-radius: 6px;
-    font-size: 0.75rem; font-weight: 600;
+    background: rgba(74,158,255,0.15);
+    color: #4a9eff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
-/* Form inputs */
-.stTextInput > div > div > input,
-.stSelectbox > div > div,
-.stTextArea > div > div > textarea,
-.stDateInput > div > div > input {
-    background: #0d1422 !important;
-    border: 1px solid #1a2540 !important;
-    border-radius: 8px !important;
-    color: #dce3f0 !important;
-    font-family: 'DM Sans', sans-serif !important;
-}
-.stTextInput > div > div > input:focus,
-.stTextArea > div > div > textarea:focus {
-    border-color: #4a9eff !important;
-    box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.12) !important;
-}
-
-/* Chat */
-.stChatMessage {
-    background: #0d1422 !important;
-    border: 1px solid #1a2540 !important;
-    border-radius: 12px !important;
-    margin-bottom: 0.8rem !important;
-}
-.stChatMessage p, .stChatMessage span, .stChatMessage div,
-[data-testid="stChatMessageContent"] p,
-[data-testid="stChatMessageContent"] span { color: #dce3f0 !important; }
-[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
-    border-left: 3px solid #4a9eff !important; background: #0a1428 !important;
-}
-[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
-    border-left: 3px solid #22d3a0 !important; background: #091a14 !important;
-}
-.stChatInputContainer {
-    background: #0d1422 !important; border: 1px solid #1a2540 !important;
-    border-radius: 10px !important; margin-top: 1rem;
-}
-.stChatInputContainer textarea { color: #dce3f0 !important; }
-
-/* Progress bars */
-.stProgress > div > div { background: #1a2540 !important; border-radius: 6px !important; }
-.stProgress > div > div > div { background: linear-gradient(90deg, #4a9eff, #22d3a0) !important; border-radius: 6px !important; }
-
-/* Checkboxes */
-.stCheckbox > label > span { color: #8a9bc4 !important; }
-
-/* Success/Error/Warning */
-.stSuccess { background: #091a14 !important; border: 1px solid #22d3a0 !important; border-radius: 10px !important; color: #22d3a0 !important; }
-.stError   { background: #1a090e !important; border: 1px solid #f43f5e !important; border-radius: 10px !important; }
-.stWarning { background: #1a130a !important; border: 1px solid #f59e0b !important; border-radius: 10px !important; }
-.stInfo    { background: #090f1a !important; border: 1px solid #4a9eff !important; border-radius: 10px !important; }
-
-/* Tabs */
-.stTabs [data-baseweb="tab-list"] { background: #0d1422 !important; border-radius: 10px !important; padding: 4px !important; }
-.stTabs [data-baseweb="tab"] { color: #8a9bc4 !important; background: transparent !important; border-radius: 8px !important; }
-.stTabs [aria-selected="true"] { background: #162d54 !important; color: #4a9eff !important; }
-
-/* Dividers */
-hr { border-color: #1a2540 !important; }
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #080c14; }
-::-webkit-scrollbar-thumb { background: #1a2540; border-radius: 4px; }
-
-/* Login page */
-.login-wrap {
-    max-width: 420px; margin: 4rem auto;
-    background: #0d1422; border: 1px solid #1a2540;
-    border-radius: 20px; padding: 2.5rem;
-}
-.login-logo { text-align: center; margin-bottom: 1.5rem; }
-.login-logo h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; color: #dce3f0; }
-.login-logo p  { color: #4a5a7a; font-size: 0.85rem; margin-top: 0.4rem; }
-
-/* Doc item */
-.doc-item {
-    background: #0a1428; border: 1px solid #1a2540; border-radius: 8px;
-    padding: 0.6rem 0.9rem; margin-bottom: 0.5rem;
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 0.84rem; color: #8a9bc4;
-}
-
-/* Task item */
-.task-item {
-    background: #0d1422; border: 1px solid #1a2540; border-radius: 10px;
-    padding: 0.9rem 1.1rem; margin-bottom: 0.6rem;
-    display: flex; align-items: center; gap: 0.8rem;
-}
-.task-done { border-color: #22d3a0; opacity: 0.6; }
-.task-pending { border-color: #f59e0b; }
-
-/* Training card */
-.training-card {
-    background: #0d1422; border: 1px solid #1a2540; border-radius: 12px;
-    padding: 1.2rem; margin-bottom: 0.8rem; transition: border-color 0.2s;
-}
-.training-card:hover { border-color: #4a9eff; }
-
-/* Badge */
+/* BADGES */
 .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 5px; font-size: 0.72rem; font-weight: 600; }
-.badge-blue   { background: #0f2040; color: #4a9eff; }
-.badge-green  { background: #091a14; color: #22d3a0; }
-.badge-amber  { background: #1a130a; color: #f59e0b; }
-.badge-red    { background: #1a090e; color: #f43f5e; }
+.badge-blue  { background: rgba(74,158,255,0.15);  color: #4a9eff; }
+.badge-green { background: rgba(34,211,160,0.15);  color: #22d3a0; }
+.badge-amber { background: rgba(245,158,11,0.15);  color: #f59e0b; }
+.badge-red   { background: rgba(244,63,94,0.15);   color: #f43f5e; }
 
-/* Metric override */
-[data-testid="stMetricValue"] { color: #4a9eff !important; font-family: 'Syne', sans-serif !important; }
-[data-testid="stMetricLabel"] { color: #4a5a7a !important; }
+/* USER PILL IN SIDEBAR */
+.user-pill {
+    border-radius: 10px;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(128,128,128,0.2);
+}
+
+/* REMINDER ROW */
+.reminder-row {
+    border-radius: 9px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(128,128,128,0.15);
+    border-left: 3px solid #4a9eff;
+}
+
+/* KEY DATES ROW */
+.date-row {
+    display: flex; gap: 0.8rem; align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(128,128,128,0.15);
+}
+.date-badge {
+    background: rgba(74,158,255,0.15);
+    color: #4a9eff;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* CHAT EMPTY STATE */
+.chat-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    border-radius: 14px;
+    border: 1px solid rgba(128,128,128,0.2);
+    opacity: 0.85;
+}
+
+/* FILE UPLOADER */
+[data-testid="stFileUploader"] {
+    border-radius: 10px !important;
+}
+
+/* DOC ITEM */
+.doc-item {
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.84rem;
+    border: 1px solid rgba(128,128,128,0.2);
+    opacity: 0.85;
+}
+
+hr { border-color: rgba(128,128,128,0.2) !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -240,7 +268,7 @@ if not st.session_state.logged_in:
         # Logo header
         st.markdown("""
         <div style='text-align:center;padding:2rem 0 1.5rem 0;'>
-            <div style='font-family:Syne,sans-serif;font-size:2rem;font-weight:800;color:#dce3f0;'>🏢 HCL Technologies</div>
+            <div style='font-family:Syne,sans-serif;font-size:2rem;font-weight:800;color:#dce3f0;'>🏢 XYZ Technologies</div>
             <div style='color:#4a5a7a;font-size:0.85rem;margin-top:0.4rem;'>Employee Onboarding Portal</div>
         </div>
         """, unsafe_allow_html=True)
@@ -306,7 +334,7 @@ if "current_page" not in st.session_state:
 with st.sidebar:
     st.markdown(f"""
     <div style='padding:1rem 0.5rem 1rem 0.5rem;'>
-        <div style='font-family:Syne,sans-serif;font-size:1rem;font-weight:700;color:#dce3f0;'>🏢 HCL Technologies</div>
+        <div style='font-family:Syne,sans-serif;font-size:1rem;font-weight:700;color:#dce3f0;'>🏢 XYZ Technologies</div>
         <div style='font-size:0.75rem;color:#4a5a7a;margin-top:2px;'>Onboarding Portal</div>
     </div>
     """, unsafe_allow_html=True)
@@ -357,11 +385,11 @@ page = st.session_state.current_page
 if page == "🏠 Dashboard":
     st.markdown(f"""
     <div style='margin-bottom:1.5rem;'>
-        <h1 style='font-family:Syne,sans-serif;font-size:2rem;color:#dce3f0;'>
+        <h1 style='font-family:Syne,sans-serif;font-size:2rem;color:inherit;'>
             Welcome back, {st.session_state.user_name}! 👋
         </h1>
-        <p style='color:#4a5a7a;margin-top:0.3rem;'>
-            {datetime.datetime.now().strftime("%A, %B %d, %Y")} · HCL Employee Onboarding Portal
+        <p style='opacity:0.6;margin-top:0.3rem;'>
+            {datetime.datetime.now().strftime("%A, %B %d, %Y")} · XYZ Employee Onboarding Portal
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -439,9 +467,9 @@ if page == "🏠 Dashboard":
         ]
         for icon, task, due in reminders:
             st.markdown(f"""
-            <div class="card card-accent" style="padding:0.8rem 1rem; margin-bottom:0.5rem;">
-                <div style="font-size:0.85rem;color:#dce3f0;">{icon} {task}</div>
-                <div style="font-size:0.72rem;color:#4a5a7a;margin-top:3px;">{due}</div>
+            <div class="reminder-row">
+                <div class="reminder-title">{icon} {task}</div>
+                <div class="reminder-sub">{due}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -456,10 +484,7 @@ if page == "🏠 Dashboard":
         ]
         for day, event in dates:
             st.markdown(f"""
-            <div style="display:flex;gap:0.8rem;align-items:center;padding:0.5rem 0;border-bottom:1px solid #1a2540;">
-                <span style="background:#0f2040;color:#4a9eff;padding:0.2rem 0.5rem;border-radius:5px;font-size:0.72rem;font-weight:600;white-space:nowrap;">{day}</span>
-                <span style="font-size:0.83rem;color:#8a9bc4;">{event}</span>
-            </div>
+            <div class="date-row"><span class="date-badge">{day}</span><span class="date-text">{event}</span></div>
             """, unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════
@@ -544,10 +569,10 @@ elif page == "💬 AI Assistant":
         # Chat messages
         if len(st.session_state.messages) == 0:
             st.markdown("""
-            <div style='text-align:center;padding:4rem 2rem;background:#0d1422;border:1px solid #1a2540;border-radius:14px;'>
+            <div class='chat-empty'>
                 <div style='font-size:3rem;margin-bottom:1rem;'>🤖</div>
-                <div style='font-family:Syne,sans-serif;font-size:1.1rem;color:#dce3f0;'>Hi! I'm your AI Onboarding Assistant</div>
-                <div style='font-size:0.85rem;color:#4a5a7a;margin-top:0.5rem;'>
+                <div style='font-family:Syne,sans-serif;font-size:1.1rem;color:inherit;'>Hi! I'm your AI Onboarding Assistant</div>
+                <div style='font-size:0.85rem;opacity:0.6;margin-top:0.5rem;'>
                     Ask me anything about HR policies, benefits, IT setup, or click a quick question →
                 </div>
             </div>
@@ -577,7 +602,7 @@ elif page == "💬 AI Assistant":
 #  PAGE: EMPLOYEE PROFILE
 # ═══════════════════════════════════════════
 elif page == "👤 Employee Profile":
-    st.markdown("""<div class="section-header"><h2>👤 Employee Profile</h2><span class="section-badge">Registration</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="section-header"><h2 style='margin:0;'>👤 Employee Profile</h2><span class="section-badge">Registration</span></div>""", unsafe_allow_html=True)
 
     employees = load_employees()
     existing = employees.get(st.session_state.username, {})
@@ -596,7 +621,7 @@ elif page == "👤 Employee Profile":
                 phone      = st.text_input("Mobile Number *", value=existing.get("phone", ""))
             with c2:
                 email      = st.text_input("Personal Email *", value=existing.get("email", ""))
-                company_email = st.text_input("Company Email", value=existing.get("company_email", ""), placeholder="firstname.lastname@hcltech.com")
+                company_email = st.text_input("Company Email", value=existing.get("company_email", ""), placeholder="firstname.lastname@xyztech.com")
                 department = st.selectbox("Department *", ["Select", "Engineering", "Finance", "HR", "Marketing", "Operations", "Sales", "IT"], index=["Select", "Engineering", "Finance", "HR", "Marketing", "Operations", "Sales", "IT"].index(existing.get("department", "Select")))
                 designation = st.text_input("Designation", value=existing.get("designation", ""))
                 joining_date = st.text_input("Date of Joining", value=existing.get("joining_date", ""), placeholder="DD/MM/YYYY")
@@ -666,7 +691,7 @@ elif page == "👤 Employee Profile":
 #  PAGE: DOCUMENT MANAGER
 # ═══════════════════════════════════════════
 elif page == "📁 Document Manager":
-    st.markdown("""<div class="section-header"><h2>📁 Document Management System</h2><span class="section-badge">Upload & Verify</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="section-header"><h2 style='margin:0;'>📁 Document Management System</h2><span class="section-badge">Upload & Verify</span></div>""", unsafe_allow_html=True)
 
     tab1, tab2, tab3 = st.tabs(["📤 Upload Documents", "📋 Required Documents", "📂 All Documents"])
 
@@ -706,9 +731,9 @@ elif page == "📁 Document Manager":
                     st.markdown(f"""
                     <div class="card card-green">
                         <div style='font-size:0.85rem;color:#22d3a0;font-weight:600;'>✅ File Ready</div>
-                        <div style='font-size:0.8rem;color:#8a9bc4;margin-top:4px;'>📄 {uploaded.name}</div>
-                        <div style='font-size:0.78rem;color:#4a5a7a;'>Size: {size_mb:.2f} MB</div>
-                        <div style='font-size:0.78rem;color:#4a5a7a;'>Type: {doc_type}</div>
+                        <div style='font-size:0.8rem;opacity:0.8;margin-top:4px;'>📄 {uploaded.name}</div>
+                        <div style='font-size:0.78rem;opacity:0.6;'>Size: {{size_mb:.2f}} MB</div>
+                        <div style='font-size:0.78rem;opacity:0.6;'>Type: {{doc_type}}</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with col2:
@@ -749,13 +774,8 @@ elif page == "📁 Document Manager":
             status_text = "✅ Uploaded" if is_uploaded else ("❌ Missing" if doc_info["required"] else "⚠️ Optional")
 
             st.markdown(f"""
-            <div style='display:flex;align-items:center;justify-content:space-between;
-                        padding:0.7rem 1rem;background:#0d1422;border:1px solid #1a2540;
-                        border-radius:9px;margin-bottom:0.5rem;border-left:3px solid {status_color};'>
-                <div>
-                    <span style='font-size:0.85rem;color:#dce3f0;'>{doc_name}</span>
-                    <span style='font-size:0.72rem;color:#4a5a7a;margin-left:0.5rem;'>({required_tag})</span>
-                </div>
+            <div style='display:flex;align-items:center;justify-content:space-between;padding:0.7rem 1rem;border:1px solid rgba(128,128,128,0.2);border-radius:9px;margin-bottom:0.5rem;border-left:3px solid {status_color};'>
+                <div><span style='font-size:0.85rem;color:inherit;'>{doc_name}</span><span style='font-size:0.72rem;opacity:0.6;margin-left:0.5rem;'>({required_tag})</span></div>
                 <span style='font-size:0.8rem;color:{status_color};font-weight:600;'>{status_text}</span>
             </div>
             """, unsafe_allow_html=True)
@@ -786,7 +806,7 @@ elif page == "📁 Document Manager":
 #  PAGE: GENERATE DOCUMENTS
 # ═══════════════════════════════════════════
 elif page == "📝 Generate Documents":
-    st.markdown("""<div class="section-header"><h2>📝 Document Generator</h2><span class="section-badge">Auto-Generate</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="section-header"><h2 style='margin:0;'>📝 Document Generator</h2><span class="section-badge">Auto-Generate</span></div>""", unsafe_allow_html=True)
 
     employees = load_employees()
     emp_data = employees.get(st.session_state.username, {})
@@ -828,7 +848,7 @@ elif page == "📝 Generate Documents":
 #  PAGE: ONBOARDING TASKS
 # ═══════════════════════════════════════════
 elif page == "✅ Onboarding Tasks":
-    st.markdown("""<div class="section-header"><h2>✅ Onboarding Task Manager</h2><span class="section-badge">Workflow</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="section-header"><h2 style='margin:0;'>✅ Onboarding Task Manager</h2><span class="section-badge">Workflow</span></div>""", unsafe_allow_html=True)
 
     TASKS = {
         "Account Setup": [
@@ -900,12 +920,12 @@ elif page == "✅ Onboarding Tasks":
 #  PAGE: TRAINING & LEARNING
 # ═══════════════════════════════════════════
 elif page == "🎓 Training & Learning":
-    st.markdown("""<div class="section-header"><h2>🎓 Training & Learning Hub</h2><span class="section-badge">Courses</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="section-header"><h2 style='margin:0;'>🎓 Training & Learning Hub</h2><span class="section-badge">Courses</span></div>""", unsafe_allow_html=True)
 
     COURSES = [
         {
             "id": "c1", "title": "Company Orientation & Culture",
-            "desc": "Learn about HCL's history, values, mission, and work culture. Understand the organizational structure and key leadership.",
+            "desc": "Learn about XYZ's history, values, mission, and work culture. Understand the organizational structure and key leadership.",
             "duration": "2 hours", "type": "Video", "mandatory": True,
             "modules": ["Company History", "Vision & Values", "Org Structure", "Leadership Team"],
         },
@@ -923,7 +943,7 @@ elif page == "🎓 Training & Learning":
         },
         {
             "id": "c4", "title": "Collaboration Tools & Productivity",
-            "desc": "Learn to use Microsoft Teams, Outlook, SharePoint, and other productivity tools used at HCL.",
+            "desc": "Learn to use Microsoft Teams, Outlook, SharePoint, and other productivity tools used at XYZ.",
             "duration": "2 hours", "type": "Hands-on", "mandatory": True,
             "modules": ["Microsoft Teams", "Outlook Setup", "SharePoint", "Project Tools"],
         },
@@ -973,7 +993,7 @@ elif page == "🎓 Training & Learning":
                 <div style='margin-bottom:0.6rem;'>
                     {mand_badge} {type_badge} {done_badge}
                 </div>
-                <p style='color:#8a9bc4;font-size:0.88rem;'>{course['desc']}</p>
+                <p style='opacity:0.8;font-size:0.88rem;'>{course['desc']}</p>
                 """, unsafe_allow_html=True)
 
                 st.markdown("**Modules:**")
@@ -997,17 +1017,17 @@ elif page == "🎓 Training & Learning":
 #  PAGE: HR CONTACTS
 # ═══════════════════════════════════════════
 elif page == "📞 HR Contacts":
-    st.markdown("""<div class="section-header"><h2>📞 HR & Support Contacts</h2><span class="section-badge">Directory</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="section-header"><h2 style='margin:0;'>📞 HR & Support Contacts</h2><span class="section-badge">Directory</span></div>""", unsafe_allow_html=True)
 
     contacts = [
-        {"dept": "HR Department",       "email": "hr@hcltech.com",          "phone": "1800-425-3300", "hours": "Mon-Fri 9AM-6PM",  "icon": "👥", "color": "#4a9eff"},
-        {"dept": "IT Helpdesk",          "email": "it.helpdesk@hcltech.com", "phone": "1800-425-1234", "hours": "24/7",             "icon": "💻", "color": "#22d3a0"},
-        {"dept": "Payroll / Finance",    "email": "payroll@hcltech.com",     "phone": "1800-425-5678", "hours": "Mon-Fri 9AM-5PM",  "icon": "💰", "color": "#f59e0b"},
-        {"dept": "Admin & Facilities",   "email": "admin@hcltech.com",       "phone": "1800-425-9999", "hours": "Mon-Sat 8AM-8PM",  "icon": "🏢", "color": "#a78bfa"},
-        {"dept": "Medical & Insurance",  "email": "insurance@hcltech.com",   "phone": "1800-425-7777", "hours": "Mon-Fri 9AM-6PM",  "icon": "🏥", "color": "#f43f5e"},
-        {"dept": "Security",             "email": "security@hcltech.com",    "phone": "1800-425-0000", "hours": "24/7 Emergency",   "icon": "🔒", "color": "#f59e0b"},
-        {"dept": "Training & L&D",       "email": "training@hcltech.com",    "phone": "1800-425-2222", "hours": "Mon-Fri 9AM-6PM",  "icon": "🎓", "color": "#22d3a0"},
-        {"dept": "Grievance Cell",       "email": "grievance@hcltech.com",   "phone": "1800-425-4444", "hours": "Mon-Fri 9AM-6PM",  "icon": "📣", "color": "#4a9eff"},
+        {"dept": "HR Department",       "email": "hr@xyztech.com",          "phone": "1800-425-3300", "hours": "Mon-Fri 9AM-6PM",  "icon": "👥", "color": "#4a9eff"},
+        {"dept": "IT Helpdesk",          "email": "it.helpdesk@xyztech.com", "phone": "1800-425-1234", "hours": "24/7",             "icon": "💻", "color": "#22d3a0"},
+        {"dept": "Payroll / Finance",    "email": "payroll@xyztech.com",     "phone": "1800-425-5678", "hours": "Mon-Fri 9AM-5PM",  "icon": "💰", "color": "#f59e0b"},
+        {"dept": "Admin & Facilities",   "email": "admin@xyztech.com",       "phone": "1800-425-9999", "hours": "Mon-Sat 8AM-8PM",  "icon": "🏢", "color": "#a78bfa"},
+        {"dept": "Medical & Insurance",  "email": "insurance@xyztech.com",   "phone": "1800-425-7777", "hours": "Mon-Fri 9AM-6PM",  "icon": "🏥", "color": "#f43f5e"},
+        {"dept": "Security",             "email": "security@xyztech.com",    "phone": "1800-425-0000", "hours": "24/7 Emergency",   "icon": "🔒", "color": "#f59e0b"},
+        {"dept": "Training & L&D",       "email": "training@xyztech.com",    "phone": "1800-425-2222", "hours": "Mon-Fri 9AM-6PM",  "icon": "🎓", "color": "#22d3a0"},
+        {"dept": "Grievance Cell",       "email": "grievance@xyztech.com",   "phone": "1800-425-4444", "hours": "Mon-Fri 9AM-6PM",  "icon": "📣", "color": "#4a9eff"},
     ]
 
     col1, col2 = st.columns(2)
@@ -1017,10 +1037,10 @@ elif page == "📞 HR Contacts":
             <div class="card" style="border-left:3px solid {c['color']}; margin-bottom:0.8rem;">
                 <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem;">
                     <span style="font-size:1.4rem;">{c['icon']}</span>
-                    <span style="font-family:Syne,sans-serif;font-size:0.95rem;color:#dce3f0;font-weight:600;">{c['dept']}</span>
+                    <span style="font-family:Syne,sans-serif;font-size:0.95rem;font-weight:600;">{c['dept']}</span>
                 </div>
-                <div style="font-size:0.82rem;color:#8a9bc4;margin-bottom:2px;">📧 {c['email']}</div>
-                <div style="font-size:0.82rem;color:#8a9bc4;margin-bottom:2px;">📱 {c['phone']}</div>
-                <div style="font-size:0.78rem;color:#4a5a7a;">🕐 {c['hours']}</div>
+                <div style="font-size:0.82rem;opacity:0.8;margin-bottom:2px;">📧 {c['email']}</div>
+                <div style="font-size:0.82rem;opacity:0.8;margin-bottom:2px;">📱 {c['phone']}</div>
+                <div style="font-size:0.78rem;opacity:0.6;">🕐 {c['hours']}</div>
             </div>
             """, unsafe_allow_html=True)

@@ -9,13 +9,26 @@ load_dotenv()
 
 def get_client():
     """Get Groq client with API key (works locally + Streamlit Cloud)"""
-    api_key = st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
-    
+    import os
+    import streamlit as st
+    from groq import Groq
+
+    api_key = None
+
+    # Try Streamlit secrets (Cloud)
+    try:
+        api_key = st.secrets["GROQ_API_KEY"]
+    except Exception:
+        pass
+
+    # Fallback to local .env
+    if not api_key:
+        api_key = os.getenv("GROQ_API_KEY")
+
     if not api_key:
         raise ValueError("GROQ API key not found. Add it in Streamlit Secrets or .env file.")
-    
-    return Groq(api_key=api_key)
 
+    return Groq(api_key=api_key)
 
 def load_documents(docs_folder="documents"):
     all_text = ""
